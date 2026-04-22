@@ -16,11 +16,16 @@
             height: 100vh;
             overflow: hidden;
         }
+        /* Глобально убираем скругления */
+        button, input, .list-item, .msg-bubble, .login-box, .settings-box, .toggle-switch, .tab {
+            border-radius: 0 !important;
+        }
         .app {
             display: flex;
             height: 100vh;
             background: #0f0f0f;
         }
+        /* Левая панель (список чатов) */
         .sidebar {
             width: 280px;
             background: #0c0c0c;
@@ -58,9 +63,7 @@
             background: #0c0c0c;
             transition: 0.2s;
         }
-        .tab:hover {
-            color: #c084fc;
-        }
+        .tab:hover { color: #c084fc; }
         .tab.active {
             color: #a855f7;
             border-bottom: 2px solid #a855f7;
@@ -91,9 +94,7 @@
             cursor: pointer;
             transition: 0.1s;
         }
-        .list-item:hover {
-            background: #181818;
-        }
+        .list-item:hover { background: #181818; }
         .list-item.active {
             background: #1a1a1a;
             border-left: 3px solid #a855f7;
@@ -108,6 +109,7 @@
             font-size: 11px;
             margin-top: 4px;
         }
+        /* Правая панель (чат) */
         .chat-area {
             flex: 1;
             display: flex;
@@ -230,9 +232,7 @@
             font-weight: 500;
             transition: 0.2s;
         }
-        .input-wrap button:hover {
-            background: #8b5cf6;
-        }
+        .input-wrap button:hover { background: #8b5cf6; }
         .login-container, .settings-container {
             position: fixed;
             top: 0;
@@ -283,9 +283,7 @@
             margin-top: 8px;
             transition: 0.2s;
         }
-        .login-box button:hover, .settings-box button:hover {
-            background: #8b5cf6;
-        }
+        .login-box button:hover, .settings-box button:hover { background: #8b5cf6; }
         .login-box button.secondary, .settings-box button.secondary {
             background: #1a1a1a;
             border: 1px solid #2a2a2a;
@@ -316,10 +314,7 @@
             align-items: center;
             margin-bottom: 12px;
         }
-        .setting-row label {
-            color: #ccc;
-            font-size: 13px;
-        }
+        .setting-row label { color: #ccc; font-size: 13px; }
         .setting-row select {
             width: auto;
             margin-bottom: 0;
@@ -333,9 +328,7 @@
             position: relative;
             transition: 0.2s;
         }
-        .toggle-switch.active {
-            background: #7c3aed;
-        }
+        .toggle-switch.active { background: #7c3aed; }
         .toggle-switch::after {
             content: '';
             width: 16px;
@@ -346,29 +339,12 @@
             left: 3px;
             transition: 0.2s;
         }
-        .toggle-switch.active::after {
-            left: 21px;
-        }
-        .hidden {
-            display: none;
-        }
-        .header-buttons {
-            display: flex;
-            gap: 8px;
-        }
-        ::-webkit-scrollbar {
-            width: 4px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #1a1a1a;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #7c3aed;
-        }
-        /* Убираем все скругления */
-        button, input, .list-item, .msg-bubble, .login-box, .settings-box, .toggle-switch {
-            border-radius: 0 !important;
-        }
+        .toggle-switch.active::after { left: 21px; }
+        .hidden { display: none; }
+        .header-buttons { display: flex; gap: 8px; }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #1a1a1a; }
+        ::-webkit-scrollbar-thumb { background: #7c3aed; }
     </style>
 </head>
 <body>
@@ -469,7 +445,6 @@
     let channelsList = [];
     let typingTimeout = null;
     let notificationsEnabled = true;
-    const SESSION_KEY = 'seven_session_token';
 
     const loginContainer = document.getElementById('loginContainer');
     const registerContainer = document.getElementById('registerContainer');
@@ -499,14 +474,13 @@
     }
 
     async function checkSession() {
-        const token = localStorage.getItem(SESSION_KEY);
-        if (!token) return;
-        const res = await apiCall('/api/check_session', { token });
-        if (res.success) {
-            if (res.theme === 'light') document.body.style.background = '#f0f0f0';
-            notificationsEnabled = res.notifications === 1;
+        const res = await fetch('/api/check_session');
+        const data = await res.json();
+        if (data.success) {
+            if (data.theme === 'light') document.body.style.background = '#f0f0f0';
+            notificationsEnabled = data.notifications === 1;
             notifToggle.classList.toggle('active', notificationsEnabled);
-            startMessenger(res.username);
+            startMessenger(data.username);
         }
     }
 
@@ -518,7 +492,6 @@
             document.getElementById('loginError').innerText = res.error;
             document.getElementById('loginError').classList.remove('hidden');
         } else {
-            localStorage.setItem(SESSION_KEY, res.token);
             if (res.theme === 'light') document.body.style.background = '#f0f0f0';
             notificationsEnabled = res.notifications === 1;
             notifToggle.classList.toggle('active', notificationsEnabled);
@@ -534,7 +507,6 @@
             document.getElementById('registerError').innerText = res.error;
             document.getElementById('registerError').classList.remove('hidden');
         } else {
-            localStorage.setItem(SESSION_KEY, res.token);
             startMessenger(res.username);
         }
     };
@@ -543,33 +515,22 @@
         loginContainer.classList.add('hidden');
         registerContainer.classList.remove('hidden');
     };
-
     document.getElementById('showLogin').onclick = () => {
         registerContainer.classList.add('hidden');
         loginContainer.classList.remove('hidden');
     };
-
     logoutBtn.onclick = async () => {
-        const token = localStorage.getItem(SESSION_KEY);
-        if (token) await apiCall('/api/logout', { token });
-        localStorage.removeItem(SESSION_KEY);
+        await fetch('/api/logout', { method: 'POST' });
         location.reload();
     };
-
-    settingsBtn.onclick = () => {
-        settingsContainer.classList.remove('hidden');
-    };
-
-    document.getElementById('closeSettings').onclick = () => {
-        settingsContainer.classList.add('hidden');
-    };
+    settingsBtn.onclick = () => settingsContainer.classList.remove('hidden');
+    document.getElementById('closeSettings').onclick = () => settingsContainer.classList.add('hidden');
 
     themeSelect.onchange = async () => {
         const theme = themeSelect.value;
         document.body.style.background = theme === 'light' ? '#f0f0f0' : '#0a0a0a';
         await apiCall('/api/update_settings', { username: currentUser, theme, notifications: notificationsEnabled });
     };
-
     notifToggle.onclick = () => {
         notificationsEnabled = !notificationsEnabled;
         notifToggle.classList.toggle('active', notificationsEnabled);
@@ -579,26 +540,13 @@
     async function startMessenger(username) {
         currentUser = username;
         myUsernameSpan.innerText = currentUser;
-        
         loginContainer.classList.add('hidden');
         registerContainer.classList.add('hidden');
         messengerDiv.classList.remove('hidden');
-        
         socket = io();
-        
-        socket.on('connect', () => {
-            socket.emit('auth', currentUser);
-        });
-        
-        socket.on('auth_ok', () => {
-            loadUsers();
-            loadChannels();
-        });
-        
-        socket.on('users_online', (online) => {
-            if (currentTab === 'chats') renderChatsList();
-        });
-        
+        socket.on('connect', () => socket.emit('auth', currentUser));
+        socket.on('auth_ok', () => { loadUsers(); loadChannels(); });
+        socket.on('users_online', () => { if (currentTab === 'chats') renderChatsList(); });
         socket.on('history', (msgs) => {
             if (currentTab === 'chats' && currentChat) {
                 messagesList.innerHTML = '';
@@ -606,7 +554,6 @@
                 scrollToBottom();
             }
         });
-        
         socket.on('new_message', (msg) => {
             if (currentTab === 'chats' && currentChat === msg.from_user) {
                 addMessage(msg);
@@ -617,14 +564,12 @@
                 }
             }
         });
-        
         socket.on('channel_message', (msg) => {
             if (currentTab === 'channels' && currentChannel === msg.to_channel) {
                 addMessage(msg);
                 scrollToBottom();
             }
         });
-        
         socket.on('channel_history', (msgs) => {
             if (currentTab === 'channels' && currentChannel) {
                 messagesList.innerHTML = '';
@@ -632,38 +577,27 @@
                 scrollToBottom();
             }
         });
-        
         socket.on('user_typing', (data) => {
             if (currentTab === 'chats' && currentChat === data.from) {
                 if (data.isTyping) {
                     typingIndicator.innerText = `${data.from} печатает...`;
                     typingIndicator.classList.remove('hidden');
-                } else {
-                    typingIndicator.classList.add('hidden');
-                }
+                } else typingIndicator.classList.add('hidden');
             }
         });
-        
         socket.on('my_channels', (channels) => {
             channelsList = channels;
             if (currentTab === 'channels') renderChannelsList();
         });
-        
         messageInput.oninput = () => {
             if (currentTab === 'chats' && currentChat && socket) {
                 socket.emit('typing_private', { to: currentChat, isTyping: true });
                 clearTimeout(typingTimeout);
-                typingTimeout = setTimeout(() => {
-                    socket.emit('typing_private', { to: currentChat, isTyping: false });
-                }, 1000);
+                typingTimeout = setTimeout(() => socket.emit('typing_private', { to: currentChat, isTyping: false }), 1000);
             }
         };
-        
         sendButton.onclick = sendMessage;
-        messageInput.onkeypress = (e) => {
-            if (e.key === 'Enter') sendMessage();
-        };
-        
+        messageInput.onkeypress = (e) => { if (e.key === 'Enter') sendMessage(); };
         document.querySelectorAll('.tab').forEach(tab => {
             tab.onclick = () => {
                 document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -685,72 +619,54 @@
                 searchInput.value = '';
             };
         });
-        
         searchInput.oninput = () => {
             if (currentTab === 'chats') renderChatsList();
             else renderChannelsList();
         };
     }
-    
+
     async function loadUsers() {
         const res = await fetch('/api/users');
         usersList = await res.json();
         if (currentTab === 'chats') renderChatsList();
     }
-    
     async function loadChannels() {
         const res = await fetch('/api/channels');
         channelsList = await res.json();
         if (currentTab === 'channels') renderChannelsList();
     }
-    
     function renderChatsList() {
         const search = searchInput.value.toLowerCase();
         let filtered = usersList.filter(u => u !== currentUser);
         if (search) filtered = filtered.filter(u => u.includes(search));
-        
         listContainer.innerHTML = '';
         filtered.forEach(user => {
             const div = document.createElement('div');
             div.className = `list-item ${currentChat === user ? 'active' : ''}`;
-            div.innerHTML = `
-                <div class="item-name">${escapeHtml(user)}</div>
-                <div class="item-desc">личный чат</div>
-            `;
+            div.innerHTML = `<div class="item-name">${escapeHtml(user)}</div><div class="item-desc">личный чат</div>`;
             div.onclick = () => openPrivateChat(user);
             listContainer.appendChild(div);
         });
-        
-        if (filtered.length === 0) {
-            listContainer.innerHTML = '<div style="padding: 20px; text-align: center; color: #666;">Нет пользователей</div>';
-        }
+        if (!filtered.length) listContainer.innerHTML = '<div style="padding:20px;text-align:center;color:#666;">Нет пользователей</div>';
     }
-    
     function renderChannelsList() {
         const search = searchInput.value.toLowerCase();
         let filtered = channelsList;
         if (search) filtered = filtered.filter(c => c.name.includes(search));
-        
         listContainer.innerHTML = '';
-        
         const createDiv = document.createElement('div');
         createDiv.className = 'list-item';
         createDiv.innerHTML = '<div class="item-name">+ Создать канал</div><div class="item-desc">новый канал</div>';
         createDiv.onclick = () => showCreateChannelModal();
         listContainer.appendChild(createDiv);
-        
         filtered.forEach(channel => {
             const div = document.createElement('div');
             div.className = `list-item ${currentChannel === channel.name ? 'active' : ''}`;
-            div.innerHTML = `
-                <div class="item-name"># ${escapeHtml(channel.name)}</div>
-                <div class="item-desc">канал</div>
-            `;
+            div.innerHTML = `<div class="item-name"># ${escapeHtml(channel.name)}</div><div class="item-desc">канал</div>`;
             div.onclick = () => openChannel(channel.name);
             listContainer.appendChild(div);
         });
     }
-    
     function openPrivateChat(user) {
         currentChat = user;
         currentChannel = null;
@@ -760,7 +676,6 @@
         socket.emit('get_history', { with: user });
         renderChatsList();
     }
-    
     function openChannel(channel) {
         currentChannel = channel;
         currentChat = null;
@@ -770,21 +685,16 @@
         socket.emit('get_channel_history', channel);
         renderChannelsList();
     }
-    
     function sendMessage() {
         let text = messageInput.value.trim();
         if (!text) return;
         if (!currentChat && !currentChannel) return;
-        if (currentChat) {
-            socket.emit('send_private', { to: currentChat, text });
-        } else if (currentChannel) {
-            socket.emit('send_channel', { channel: currentChannel, text });
-        }
+        if (currentChat) socket.emit('send_private', { to: currentChat, text });
+        else if (currentChannel) socket.emit('send_channel', { channel: currentChannel, text });
         messageInput.value = '';
         if (typingTimeout) clearTimeout(typingTimeout);
         if (currentChat) socket.emit('typing_private', { to: currentChat, isTyping: false });
     }
-    
     function addMessage(msg) {
         const isMine = msg.from_user === currentUser;
         const div = document.createElement('div');
@@ -801,12 +711,11 @@
         const timeDiv = document.createElement('div');
         timeDiv.className = 'msg-time';
         const date = new Date(msg.timestamp);
-        timeDiv.innerText = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        timeDiv.innerText = date.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
         div.appendChild(bubble);
         div.appendChild(timeDiv);
         messagesList.appendChild(div);
     }
-    
     function showCreateChannelModal() {
         const name = prompt('Название канала (буквы, цифры, _):');
         if (!name) return;
@@ -815,18 +724,11 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name, owner: currentUser })
         }).then(res => res.json()).then(data => {
-            if (data.success) {
-                loadChannels();
-            } else {
-                alert(data.error);
-            }
+            if (data.success) loadChannels();
+            else alert(data.error);
         });
     }
-    
-    function scrollToBottom() {
-        messagesList.scrollTop = messagesList.scrollHeight;
-    }
-    
+    function scrollToBottom() { messagesList.scrollTop = messagesList.scrollHeight; }
     function escapeHtml(str) {
         if (!str) return '';
         return str.replace(/[&<>]/g, function(m) {
@@ -836,7 +738,6 @@
             return m;
         });
     }
-    
     checkSession();
 </script>
 </body>
