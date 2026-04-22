@@ -4,6 +4,8 @@ const socketIo = require('socket.io');
 const sqlite3 = require('sqlite3').verbose();
 const bcrypt = require('bcrypt');
 const path = require('path');
+const cookieParser = require('cookie-parser');
+const crypto = require('crypto');
 
 const app = express();
 const server = http.createServer(app);
@@ -11,6 +13,7 @@ const io = socketIo(server);
 
 app.use(express.static('public'));
 app.use(express.json());
+app.use(cookieParser());
 
 const db = new sqlite3.Database('./seven.db');
 
@@ -19,6 +22,7 @@ db.serialize(() => {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT UNIQUE,
         password TEXT,
+        session_token TEXT,
         theme TEXT DEFAULT 'dark',
         notifications INTEGER DEFAULT 1,
         last_seen DATETIME DEFAULT CURRENT_TIMESTAMP
@@ -54,23 +58,35 @@ function cleanText(str) {
     return str.replace(/[^\w\s\-\.,!?@#\$%\^\&*\(\)\[\]{}:;"'`~]/g, '').trim().substring(0, 500);
 }
 
+function generateToken() {
+    return crypto.randomBytes(64).toString('hex');
+}
+
 app.post('/api/register', async (req, res) => {
     const { username, password } = req.body;
     if (!username || !password) return res.json({ error: 'Заполните все поля' });
     
     const cleanUsername = username.trim().toLowerCase().replace(/[^a-z0-9_]/g, '');
-    if (cleanUsername.length < 3) return res.json({ error: 'Юзернейм минимум 3 символа (буквы, цифры, _)' });
+    if (cleanUsername.length < 3) return res.json({ error: 'Юзернейм минимум 3 символа' });
     if (password.length < 4) return res.json({ error: 'Пароль минимум 4 символа' });
     
     const hashed = await bcrypt.hash(password, 10);
+    const token = generateToken();
     
-    db.run('INSERT INTO users (username, password) VALUES (?, ?)', [cleanUsername, hashed], (err) => {
+    db.run('INSERT INTO users (username, password, session_token) VALUES (?, ?, ?)', 
+        [cleanUsername, hashed, token], (err) => {
         if (err) return res.json({ error: 'Юзернейм уже существует' });
+        
+        res.cookie('session_token', token, { 
+            maxAge: 365 * 24 * 60 * 60 * 1000,
+            httpOnly: true,
+            path: '/'
+        });
         res.json({ success: true, username: cleanUsername });
     });
 });
 
-app.post('/api/login', (req, res) => {
+app.post('/api/login', async (req, res) => {
     const { username, password } = req.body;
     if (!username || !password) return res.json({ error: 'Заполните все поля' });
     
@@ -82,8 +98,31 @@ app.post('/api/login', (req, res) => {
         const match = await bcrypt.compare(password, user.password);
         if (!match) return res.json({ error: 'Неверный юзернейм или пароль' });
         
+        const token = generateToken();
+        db.run('UPDATE users SET session_token = ? WHERE username = ?', [token, cleanUsername]);
+        
+        res.cookie('session_token', token, { 
+            maxAge: 365 * 24 * 60 * 60 * 1000,
+            httpOnly: true,
+            path: '/'
+        });
         res.json({ success: true, username: user.username, theme: user.theme, notifications: user.notifications });
     });
+});
+
+app.get('/api/check_session', (req, res) => {
+    const token = req.cookies.session_token;
+    if (!token) return res.json({ success: false });
+    
+    db.get('SELECT username, theme, notifications FROM users WHERE session_token = ?', [token], (err, user) => {
+        if (!user) return res.json({ success: false });
+        res.json({ success: true, username: user.username, theme: user.theme, notifications: user.notifications });
+    });
+});
+
+app.post('/api/logout', (req, res) => {
+    res.clearCookie('session_token');
+    res.json({ success: true });
 });
 
 app.get('/api/users', (req, res) => {
@@ -103,7 +142,7 @@ app.post('/api/create_channel', (req, res) => {
     if (!name || !owner) return res.json({ error: 'Название канала обязательно' });
     
     const cleanName = name.trim().replace(/[^a-z0-9_]/gi, '').toLowerCase();
-    if (cleanName.length < 3) return res.json({ error: 'Минимум 3 символа (буквы, цифры, _)' });
+    if (cleanName.length < 3) return res.json({ error: 'Минимум 3 символа' });
     
     db.run('INSERT INTO channels (name, owner) VALUES (?, ?)', [cleanName, owner], (err) => {
         if (err) return res.json({ error: 'Канал уже существует' });
@@ -239,6 +278,7 @@ io.on('connection', (socket) => {
     });
 });
 
-server.listen(3000, () => {
-    console.log('Seven Messenger running on http://localhost:3000');
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => {
+    console.log(`Seven Messenger running on port ${PORT}`);
 });

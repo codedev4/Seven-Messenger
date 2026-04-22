@@ -64,6 +64,11 @@
             font-size: 13px;
             font-weight: 500;
             background: #0c0c0c;
+            transition: 0.2s;
+        }
+
+        .tab:hover {
+            color: #c084fc;
         }
 
         .tab.active {
@@ -99,6 +104,7 @@
             padding: 12px 16px;
             border-bottom: 1px solid #151515;
             cursor: pointer;
+            transition: 0.1s;
         }
 
         .list-item:hover {
@@ -157,11 +163,28 @@
             cursor: pointer;
             font-size: 14px;
             padding: 6px 12px;
+            transition: 0.2s;
         }
 
         .settings-btn:hover {
             border-color: #a855f7;
             color: #a855f7;
+        }
+
+        .logout-btn {
+            background: none;
+            border: 1px solid #2a2a2a;
+            color: #888;
+            cursor: pointer;
+            font-size: 14px;
+            padding: 6px 12px;
+            margin-left: 8px;
+            transition: 0.2s;
+        }
+
+        .logout-btn:hover {
+            border-color: #ef4444;
+            color: #ef4444;
         }
 
         .messages {
@@ -195,7 +218,7 @@
         }
 
         .msg-bubble {
-            padding: 8px 12px;
+            padding: 10px 14px;
             background: #1a1a1a;
             color: #e0e0e0;
             font-size: 14px;
@@ -255,6 +278,7 @@
             cursor: pointer;
             font-size: 14px;
             font-weight: 500;
+            transition: 0.2s;
         }
 
         .input-wrap button:hover {
@@ -314,11 +338,21 @@
             font-size: 14px;
             font-weight: 500;
             margin-top: 8px;
+            transition: 0.2s;
+        }
+
+        .login-box button:hover, .settings-box button:hover {
+            background: #8b5cf6;
         }
 
         .login-box button.secondary, .settings-box button.secondary {
             background: #1a1a1a;
             border: 1px solid #2a2a2a;
+        }
+
+        .login-box button.secondary:hover, .settings-box button.secondary:hover {
+            border-color: #a855f7;
+            color: #a855f7;
         }
 
         .error {
@@ -364,6 +398,7 @@
             background: #2a2a2a;
             cursor: pointer;
             position: relative;
+            transition: 0.2s;
         }
 
         .toggle-switch.active {
@@ -387,6 +422,11 @@
 
         .hidden {
             display: none;
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 8px;
         }
 
         ::-webkit-scrollbar {
@@ -473,7 +513,10 @@
                 <h2 id="chatTitle">-</h2>
                 <p id="chatSubtitle"></p>
             </div>
-            <button class="settings-btn" id="settingsBtn">Настройки</button>
+            <div class="header-buttons">
+                <button class="settings-btn" id="settingsBtn">Настройки</button>
+                <button class="logout-btn" id="logoutBtn">Выйти</button>
+            </div>
         </div>
         <div class="messages" id="messagesList"></div>
         <div class="typing hidden" id="typingIndicator"></div>
@@ -512,6 +555,7 @@
     const typingIndicator = document.getElementById('typingIndicator');
     const searchInput = document.getElementById('searchInput');
     const settingsBtn = document.getElementById('settingsBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
     const themeSelect = document.getElementById('themeSelect');
     const notifToggle = document.getElementById('notifToggle');
 
@@ -522,6 +566,17 @@
             body: JSON.stringify(data)
         });
         return res.json();
+    }
+
+    async function checkSession() {
+        const res = await fetch('/api/check_session');
+        const data = await res.json();
+        if (data.success) {
+            if (data.theme === 'light') document.body.style.background = '#f0f0f0';
+            notificationsEnabled = data.notifications === 1;
+            notifToggle.classList.toggle('active', notificationsEnabled);
+            startMessenger(data.username);
+        }
     }
 
     document.getElementById('doLogin').onclick = async () => {
@@ -559,6 +614,11 @@
     document.getElementById('showLogin').onclick = () => {
         registerContainer.classList.add('hidden');
         loginContainer.classList.remove('hidden');
+    };
+
+    logoutBtn.onclick = async () => {
+        await apiCall('/api/logout', {});
+        location.reload();
     };
 
     settingsBtn.onclick = () => {
@@ -617,7 +677,7 @@
                 addMessage(msg);
                 scrollToBottom();
                 if (notificationsEnabled && document.hidden) {
-                    document.title = 'New message - Seven';
+                    document.title = '✧ Новое сообщение - Seven';
                     setTimeout(() => { document.title = 'Seven Messenger'; }, 3000);
                 }
             }
@@ -850,6 +910,8 @@
             return m;
         });
     }
+    
+    checkSession();
 </script>
 </body>
 </html>
