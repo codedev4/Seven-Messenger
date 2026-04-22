@@ -3,7 +3,6 @@ const http = require('http');
 const socketIo = require('socket.io');
 const sqlite3 = require('sqlite3').verbose();
 const bcrypt = require('bcrypt');
-const path = require('path');
 
 const app = express();
 const server = http.createServer(app);
