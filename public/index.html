@@ -10,20 +10,17 @@
             padding: 0;
             box-sizing: border-box;
         }
-
         body {
             background: #0a0a0a;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             height: 100vh;
             overflow: hidden;
         }
-
         .app {
             display: flex;
             height: 100vh;
             background: #0f0f0f;
         }
-
         .sidebar {
             width: 280px;
             background: #0c0c0c;
@@ -31,30 +28,25 @@
             display: flex;
             flex-direction: column;
         }
-
         .user-info {
             padding: 20px;
             border-bottom: 1px solid #1f1f1f;
             background: #0e0e0e;
         }
-
         .user-info h3 {
             color: #e0e0e0;
             font-size: 16px;
             font-weight: 500;
         }
-
         .user-info p {
             color: #a855f7;
             font-size: 12px;
             margin-top: 4px;
         }
-
         .nav-tabs {
             display: flex;
             border-bottom: 1px solid #1f1f1f;
         }
-
         .tab {
             flex: 1;
             padding: 12px;
@@ -66,21 +58,17 @@
             background: #0c0c0c;
             transition: 0.2s;
         }
-
         .tab:hover {
             color: #c084fc;
         }
-
         .tab.active {
             color: #a855f7;
             border-bottom: 2px solid #a855f7;
         }
-
         .search-box {
             padding: 12px;
             border-bottom: 1px solid #1f1f1f;
         }
-
         .search-box input {
             width: 100%;
             padding: 8px 12px;
@@ -89,52 +77,43 @@
             color: #e0e0e0;
             font-size: 13px;
         }
-
         .search-box input:focus {
             outline: none;
             border-color: #a855f7;
         }
-
         .list-container {
             flex: 1;
             overflow-y: auto;
         }
-
         .list-item {
             padding: 12px 16px;
             border-bottom: 1px solid #151515;
             cursor: pointer;
             transition: 0.1s;
         }
-
         .list-item:hover {
             background: #181818;
         }
-
         .list-item.active {
             background: #1a1a1a;
             border-left: 3px solid #a855f7;
         }
-
         .item-name {
             color: #e0e0e0;
             font-size: 14px;
             font-weight: 500;
         }
-
         .item-desc {
             color: #666;
             font-size: 11px;
             margin-top: 4px;
         }
-
         .chat-area {
             flex: 1;
             display: flex;
             flex-direction: column;
             background: #0f0f0f;
         }
-
         .chat-header {
             padding: 16px 24px;
             border-bottom: 1px solid #1f1f1f;
@@ -143,19 +122,16 @@
             justify-content: space-between;
             align-items: center;
         }
-
         .chat-header h2 {
             color: #e0e0e0;
             font-size: 18px;
             font-weight: 500;
         }
-
         .chat-header p {
             color: #888;
             font-size: 12px;
             margin-top: 4px;
         }
-
         .settings-btn {
             background: none;
             border: 1px solid #2a2a2a;
@@ -165,12 +141,10 @@
             padding: 6px 12px;
             transition: 0.2s;
         }
-
         .settings-btn:hover {
             border-color: #a855f7;
             color: #a855f7;
         }
-
         .logout-btn {
             background: none;
             border: 1px solid #2a2a2a;
@@ -181,12 +155,10 @@
             margin-left: 8px;
             transition: 0.2s;
         }
-
         .logout-btn:hover {
             border-color: #ef4444;
             color: #ef4444;
         }
-
         .messages {
             flex: 1;
             overflow-y: auto;
@@ -195,28 +167,23 @@
             flex-direction: column;
             gap: 12px;
         }
-
         .msg {
             max-width: 65%;
             display: flex;
             flex-direction: column;
         }
-
         .msg-mine {
             align-self: flex-end;
         }
-
         .msg-other {
             align-self: flex-start;
         }
-
         .msg-name {
             font-size: 11px;
             color: #a855f7;
             margin-bottom: 3px;
             font-weight: 500;
         }
-
         .msg-bubble {
             padding: 10px 14px;
             background: #1a1a1a;
@@ -224,19 +191,16 @@
             font-size: 14px;
             border: 1px solid #2a2a2a;
         }
-
         .msg-mine .msg-bubble {
             background: #7c3aed;
             border-color: #8b5cf6;
             color: white;
         }
-
         .msg-time {
             font-size: 10px;
             color: #555;
             margin-top: 3px;
         }
-
         .typing {
             padding: 8px 24px;
             color: #a855f7;
@@ -244,18 +208,15 @@
             background: #0e0e0e;
             border-top: 1px solid #1f1f1f;
         }
-
         .input-area {
             padding: 16px 24px;
             background: #0e0e0e;
             border-top: 1px solid #1f1f1f;
         }
-
         .input-wrap {
             display: flex;
             gap: 12px;
         }
-
         .input-wrap input {
             flex: 1;
             padding: 10px 14px;
@@ -264,12 +225,10 @@
             color: #e0e0e0;
             font-size: 14px;
         }
-
         .input-wrap input:focus {
             outline: none;
             border-color: #a855f7;
         }
-
         .input-wrap button {
             padding: 10px 24px;
             background: #7c3aed;
@@ -280,11 +239,9 @@
             font-weight: 500;
             transition: 0.2s;
         }
-
         .input-wrap button:hover {
             background: #8b5cf6;
         }
-
         .login-container, .settings-container {
             position: fixed;
             top: 0;
@@ -297,14 +254,12 @@
             align-items: center;
             z-index: 1000;
         }
-
         .login-box, .settings-box {
             width: 360px;
             background: #0e0e0e;
             padding: 32px;
             border: 1px solid #1f1f1f;
         }
-
         .login-box h1, .settings-box h2 {
             color: #e0e0e0;
             font-size: 28px;
@@ -312,7 +267,6 @@
             margin-bottom: 24px;
             text-align: center;
         }
-
         .login-box input, .settings-box input, .settings-box select {
             width: 100%;
             padding: 12px;
@@ -322,12 +276,10 @@
             color: #e0e0e0;
             font-size: 14px;
         }
-
         .login-box input:focus, .settings-box input:focus, .settings-box select:focus {
             outline: none;
             border-color: #a855f7;
         }
-
         .login-box button, .settings-box button {
             width: 100%;
             padding: 12px;
@@ -340,58 +292,48 @@
             margin-top: 8px;
             transition: 0.2s;
         }
-
         .login-box button:hover, .settings-box button:hover {
             background: #8b5cf6;
         }
-
         .login-box button.secondary, .settings-box button.secondary {
             background: #1a1a1a;
             border: 1px solid #2a2a2a;
         }
-
         .login-box button.secondary:hover, .settings-box button.secondary:hover {
             border-color: #a855f7;
             color: #a855f7;
         }
-
         .error {
             color: #ef4444;
             font-size: 12px;
             margin-bottom: 16px;
             text-align: center;
         }
-
         .settings-section {
             margin-bottom: 24px;
             padding-bottom: 16px;
             border-bottom: 1px solid #1f1f1f;
         }
-
         .settings-section h3 {
             color: #e0e0e0;
             font-size: 14px;
             margin-bottom: 12px;
         }
-
         .setting-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 12px;
         }
-
         .setting-row label {
             color: #ccc;
             font-size: 13px;
         }
-
         .setting-row select {
             width: auto;
             margin-bottom: 0;
             padding: 6px 12px;
         }
-
         .toggle-switch {
             width: 40px;
             height: 20px;
@@ -400,11 +342,9 @@
             position: relative;
             transition: 0.2s;
         }
-
         .toggle-switch.active {
             background: #7c3aed;
         }
-
         .toggle-switch::after {
             content: '';
             width: 16px;
@@ -415,28 +355,22 @@
             left: 3px;
             transition: 0.2s;
         }
-
         .toggle-switch.active::after {
             left: 21px;
         }
-
         .hidden {
             display: none;
         }
-
         .header-buttons {
             display: flex;
             gap: 8px;
         }
-
         ::-webkit-scrollbar {
             width: 4px;
         }
-
         ::-webkit-scrollbar-track {
             background: #1a1a1a;
         }
-
         ::-webkit-scrollbar-thumb {
             background: #7c3aed;
         }
@@ -540,6 +474,7 @@
     let channelsList = [];
     let typingTimeout = null;
     let notificationsEnabled = true;
+    const SESSION_KEY = 'seven_session_token';
 
     const loginContainer = document.getElementById('loginContainer');
     const registerContainer = document.getElementById('registerContainer');
@@ -569,13 +504,14 @@
     }
 
     async function checkSession() {
-        const res = await fetch('/api/check_session');
-        const data = await res.json();
-        if (data.success) {
-            if (data.theme === 'light') document.body.style.background = '#f0f0f0';
-            notificationsEnabled = data.notifications === 1;
+        const token = localStorage.getItem(SESSION_KEY);
+        if (!token) return;
+        const res = await apiCall('/api/check_session', { token });
+        if (res.success) {
+            if (res.theme === 'light') document.body.style.background = '#f0f0f0';
+            notificationsEnabled = res.notifications === 1;
             notifToggle.classList.toggle('active', notificationsEnabled);
-            startMessenger(data.username);
+            startMessenger(res.username);
         }
     }
 
@@ -587,6 +523,7 @@
             document.getElementById('loginError').innerText = res.error;
             document.getElementById('loginError').classList.remove('hidden');
         } else {
+            localStorage.setItem(SESSION_KEY, res.token);
             if (res.theme === 'light') document.body.style.background = '#f0f0f0';
             notificationsEnabled = res.notifications === 1;
             notifToggle.classList.toggle('active', notificationsEnabled);
@@ -602,6 +539,7 @@
             document.getElementById('registerError').innerText = res.error;
             document.getElementById('registerError').classList.remove('hidden');
         } else {
+            localStorage.setItem(SESSION_KEY, res.token);
             startMessenger(res.username);
         }
     };
@@ -617,7 +555,9 @@
     };
 
     logoutBtn.onclick = async () => {
-        await apiCall('/api/logout', {});
+        const token = localStorage.getItem(SESSION_KEY);
+        if (token) await apiCall('/api/logout', { token });
+        localStorage.removeItem(SESSION_KEY);
         location.reload();
     };
 
@@ -822,9 +762,7 @@
         chatTitle.innerText = user;
         chatSubtitle.innerText = 'личный чат';
         messagesList.innerHTML = '';
-        
         socket.emit('get_history', { with: user });
-        
         renderChatsList();
     }
     
@@ -834,7 +772,6 @@
         chatTitle.innerText = '# ' + channel;
         chatSubtitle.innerText = 'канал';
         messagesList.innerHTML = '';
-        
         socket.emit('get_channel_history', channel);
         renderChannelsList();
     }
@@ -843,13 +780,11 @@
         let text = messageInput.value.trim();
         if (!text) return;
         if (!currentChat && !currentChannel) return;
-        
         if (currentChat) {
             socket.emit('send_private', { to: currentChat, text });
         } else if (currentChannel) {
             socket.emit('send_channel', { channel: currentChannel, text });
         }
-        
         messageInput.value = '';
         if (typingTimeout) clearTimeout(typingTimeout);
         if (currentChat) socket.emit('typing_private', { to: currentChat, isTyping: false });
@@ -859,23 +794,19 @@
         const isMine = msg.from_user === currentUser;
         const div = document.createElement('div');
         div.className = `msg ${isMine ? 'msg-mine' : 'msg-other'}`;
-        
         if (!isMine) {
             const nameDiv = document.createElement('div');
             nameDiv.className = 'msg-name';
             nameDiv.innerText = escapeHtml(msg.from_user);
             div.appendChild(nameDiv);
         }
-        
         const bubble = document.createElement('div');
         bubble.className = 'msg-bubble';
         bubble.innerText = escapeHtml(msg.text);
-        
         const timeDiv = document.createElement('div');
         timeDiv.className = 'msg-time';
         const date = new Date(msg.timestamp);
         timeDiv.innerText = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        
         div.appendChild(bubble);
         div.appendChild(timeDiv);
         messagesList.appendChild(div);

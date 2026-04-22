@@ -4,8 +4,6 @@ const socketIo = require('socket.io');
 const sqlite3 = require('sqlite3').verbose();
 const bcrypt = require('bcrypt');
 const path = require('path');
-const cookieParser = require('cookie-parser');
-const crypto = require('crypto');
 
 const app = express();
 const server = http.createServer(app);
@@ -13,7 +11,6 @@ const io = socketIo(server);
 
 app.use(express.static('public'));
 app.use(express.json());
-app.use(cookieParser());
 
 const db = new sqlite3.Database('./seven.db');
 
@@ -59,7 +56,7 @@ function cleanText(str) {
 }
 
 function generateToken() {
-    return crypto.randomBytes(64).toString('hex');
+    return Date.now() + '_' + Math.random().toString(36).substring(2);
 }
 
 app.post('/api/register', async (req, res) => {
@@ -76,13 +73,7 @@ app.post('/api/register', async (req, res) => {
     db.run('INSERT INTO users (username, password, session_token) VALUES (?, ?, ?)', 
         [cleanUsername, hashed, token], (err) => {
         if (err) return res.json({ error: 'Юзернейм уже существует' });
-        
-        res.cookie('session_token', token, { 
-            maxAge: 365 * 24 * 60 * 60 * 1000,
-            httpOnly: true,
-            path: '/'
-        });
-        res.json({ success: true, username: cleanUsername });
+        res.json({ success: true, username: cleanUsername, token: token });
     });
 });
 
@@ -101,17 +92,12 @@ app.post('/api/login', async (req, res) => {
         const token = generateToken();
         db.run('UPDATE users SET session_token = ? WHERE username = ?', [token, cleanUsername]);
         
-        res.cookie('session_token', token, { 
-            maxAge: 365 * 24 * 60 * 60 * 1000,
-            httpOnly: true,
-            path: '/'
-        });
-        res.json({ success: true, username: user.username, theme: user.theme, notifications: user.notifications });
+        res.json({ success: true, username: user.username, theme: user.theme, notifications: user.notifications, token: token });
     });
 });
 
-app.get('/api/check_session', (req, res) => {
-    const token = req.cookies.session_token;
+app.post('/api/check_session', (req, res) => {
+    const { token } = req.body;
     if (!token) return res.json({ success: false });
     
     db.get('SELECT username, theme, notifications FROM users WHERE session_token = ?', [token], (err, user) => {
@@ -121,7 +107,10 @@ app.get('/api/check_session', (req, res) => {
 });
 
 app.post('/api/logout', (req, res) => {
-    res.clearCookie('session_token');
+    const { token } = req.body;
+    if (token) {
+        db.run('UPDATE users SET session_token = NULL WHERE session_token = ?', [token]);
+    }
     res.json({ success: true });
 });
 
